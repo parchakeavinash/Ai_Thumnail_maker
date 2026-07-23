@@ -1,36 +1,37 @@
 from typing import Optional, List
 from datetime import datetime, timezone
 from uuid import uuid4
+from enum import Enum
 
 from sqlmodel import Field, SQLModel, Relationship
-from sqlmodel import Enum
 
 
-def _uuid() ->str:
+def _uuid() -> str:
     return str(uuid4())
 
-def _now() ->datetime:
+
+def _now() -> datetime:
     return datetime.now(timezone.utc)
 
-class Thumbnail(SQLModel, table = True):
-    id : str = Field(default_factory = _uuid,primary_key = True)
-    job_id : str = Field(foreign_key = "job.id")
-    style_name : str = Field(default = "")
+
+class Thumbnail(SQLModel, table=True):
+    id: str = Field(default_factory=_uuid, primary_key=True)
+    job_id: str = Field(foreign_key="job.id")
+    style_name: str = Field(default="")
     imagekit_url: Optional[str] = Field(default=None)
-    status: str = Field(default = 'Pending')
-    error_message: Optional[str] = Field(default= None)
-    created_at: datetime = Field(default_factory = _now)
+    status: str = Field(default="pending")
+    error_message: Optional[str] = Field(default=None)
+    created_at: datetime = Field(default_factory=_now)
 
-    job: Optional['Job'] =  Relationship(back_populates = 'thumbnails')
-
-class Job(SQLModel, table = True):
-    id : str = Field(default_factory = _uuid, primary_key = True)
-    prompt: str = Field(default= "")
-    num_thumbnails: int = Field(default=3, ge=1,le = 3)
-    headshot_url : str= Field(default= "")
-    status: str = Field(default = 'Pending')
-    created_at: datetime = Field(default_factory = _now)
-    
-    thumbnails: List['Thumbnail'] =  Relationship(back_populates = 'job')
+    job: Optional["Job"] = Relationship(back_populates="thumbnails")
 
 
+class Job(SQLModel, table=True):
+    id: str = Field(default_factory=_uuid, primary_key=True)
+    prompt: str = Field(default="")
+    num_thumbnails: int = Field(default=3, ge=1, le=3)
+    headshot_url: str = Field(default="")
+    status: str = Field(default="pending")
+    created_at: datetime = Field(default_factory=_now)
+
+    thumbnails: List["Thumbnail"] = Relationship(back_populates="job")
