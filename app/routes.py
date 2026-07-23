@@ -58,10 +58,7 @@ class JobResponse(BaseModel):
 # ── Routes ────────────────────────────────────────────────────────────────────
 
 @api.post("/upload-headshot")
-async def upload_headshot(
-    file: UploadFile = File(...),
-    session: Session = Depends(get_session),
-):
+async def upload_headshot(file: UploadFile = File(...)):
     contents = await file.read()
     url = await upload_to_imagekit(
         file_bytes=contents,
@@ -69,6 +66,7 @@ async def upload_headshot(
         folder="uploads",
     )
     return {"url": url}
+
 
 
 @api.post("/jobs", response_model=CreateJobResponse, status_code=201)
